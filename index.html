@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Translate - DeepL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-glow: rgba(120, 119, 198, 0.4);
+            --bg-color: #050505;
+            --grid-color: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-color: #7877c6;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Glowing Grid Background */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            animation: pulseGrid 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGrid {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            max-width: 800px;
+            height: 80vw;
+            max-height: 800px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 60%);
+            z-index: -2;
+            filter: blur(60px);
+            animation: floatGlow 10s ease-in-out infinite;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -55%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            z-index: 1;
+            padding: 2rem;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #fff, #a5a5b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Settings Button */
+        .settings-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .settings-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Glassmorphism Translator App */
+        .translator-app {
+            background: rgba(20, 20, 25, 0.6);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .translator-app:hover {
+            box-shadow: 0 35px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Custom Dropdown Animation & Style */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-selected {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .select-selected:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .select-selected:after {
+            content: "";
+            border: solid rgba(255, 255, 255, 0.6);
+            border-width: 0 2px 2px 0;
+            display: inline-block;
+            padding: 3px;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+            margin-bottom: 2px;
+        }
+
+        .select-selected.select-arrow-active {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(120, 119, 198, 0.2);
+        }
+
+        .select-selected.select-arrow-active:after {
+            transform: rotate(-135deg);
+            margin-bottom: -4px;
+        }
+
+        .select-items {
+            position: absolute;
+            background-color: #1a1a24;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            border-radius: 12px;
+            margin-top: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            overflow: hidden;
+            opacity: 1;
+            transform: translateY(0) scaleY(1);
+            transform-origin: top;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .select-hide {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scaleY(0.95);
+        }
+
+        .select-items div {
+            color: #fff;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.2s, padding-left 0.2s;
+        }
+
+        .select-items div:hover {
+            background-color: rgba(120, 119, 198, 0.3);
+            padding-left: 25px;
+        }
+
+        /* Scrollbar styling for dropdown */
+        .select-items::-webkit-scrollbar {
+            width: 8px;
+        }
+        .select-items::-webkit-scrollbar-track {
+            background: #1a1a24;
+            border-radius: 12px;
+        }
+        .select-items::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+        .select-items::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .swap-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .swap-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(180deg) scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .swap-btn:active {
+            transform: rotate(180deg) scale(0.95);
+        }
+
+        .swap-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            transition: fill 0.3s ease;
+        }
+
+        .text-areas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            height: 280px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            color: #fff;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        textarea:focus {
+            border-color: var(--accent-color);
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2), 0 0 0 3px rgba(120, 119, 198, 0.1);
+        }
+
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            transition: opacity 0.3s ease;
+        }
+
+        textarea:focus::placeholder {
+            opacity: 0.5;
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            margin-right: auto;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .translate-btn {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            border: none;
+            padding: 14px 36px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .translate-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .translate-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .translate-btn.loading {
+            opacity: 0.8;
+            cursor: wait;
+            transform: none;
+        }
+
+        .loader {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        .translate-btn.loading .loader {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #111116;
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .modal p {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .modal input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .modal input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .btn-save {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .btn-save:hover {
+            background: #6a69b6;
+        }
+
+        @media (max-width: 768px) {
+            .text-areas {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            .swap-btn {
+                transform: rotate(90deg);
+            }
+            .swap-btn:hover {
+                transform: rotate(270deg) scale(1.1);
+            }
+            .swap-btn:active {
+                transform: rotate(270deg) scale(0.95);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="glow"></div>
+
+    <div class="container">
+        <header>
+            <h1>Global Translate</h1>
+            <p>Powered by DeepL. Seamless communication without borders.</p>
+            <button class="settings-btn" id="settings-btn" aria-label="Settings">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"></path>
+                </svg>
+            </button>
+        </header>
+
+        <div class="translator-app">
+            <div class="controls">
+                <!-- Custom Select Source -->
+                <div class="custom-select" id="source-select" data-value="auto">
+                    <div class="select-selected">Detect Language</div>
+                    <div class="select-items select-hide">
+                        <div data-value="auto">Detect Language</div>
+                        <div data-value="BG">Bulgarian</div>
+                        <div data-value="ZH">Chinese</div>
+                        <div data-value="CS">Czech</div>
+                        <div data-value="DA">Danish</div>
+                        <div data-value="NL">Dutch</div>
+                        <div data-value="EN">English</div>
+                        <div data-value="FR">French</div>
+                        <div data-value="DE">German</div>
+                        <div data-value="IT">Italian</div>
+                        <div data-value="JA">Japanese</div>
+                        <div data-value="KO">Korean</div>
+                        <div data-value="PT">Portuguese</div>
+                        <div data-value="RU">Russian</div>
+                        <div data-value="ES">Spanish</div>
+                        <div data-value="AR">Arabic</div>
+                    </div>
+                </div>
+
+                <button class="swap-btn" id="swap-lang" aria-label="Swap Languages">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"></path>
+                    </svg>
+                </button>
+
+                <!-- Custom Select Target -->
+                <div class="custom-select" id="target-select" data-value="ES">
+                    <div class="select-selected">Spanish</div>
+                    <div class="select-items select-hide">
+                        <div data-value="BG">Bulgarian</div>
+                        <div data-value="ZH">Chinese</div>
+                        <div data-value="CS">Czech</div>
+                        <div data-value="DA">Danish</div>
+                        <div data-value="NL">Dutch</div>
+                        <div data-value="EN-US">English (US)</div>
+                        <div data-value="EN-GB">English (UK)</div>
+                        <div data-value="FR">French</div>
+                        <div data-value="DE">German</div>
+                        <div data-value="IT">Italian</div>
+                        <div data-value="JA">Japanese</div>
+                        <div data-value="KO">Korean</div>
+                        <div data-value="PT-BR">Portuguese (BR)</div>
+                        <div data-value="RU">Russian</div>
+                        <div data-value="ES">Spanish</div>
+                        <div data-value="AR">Arabic</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-areas">
+                <div class="input-group">
+                    <textarea id="source-text" placeholder="Enter text to translate..."></textarea>
+                </div>
+                <div class="input-group">
+                    <textarea id="target-text" placeholder="Translation will appear here..." readonly></textarea>
+                </div>
+            </div>
+
+            <div class="actions">
+                <div class="error-message" id="error-message"></div>
+                <button class="translate-btn" id="translate-btn">
+                    <span class="btn-text">Translate</span>
+                    <div class="loader"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div class="modal-overlay" id="api-modal">
+        <div class="modal">
+            <h2>DeepL API Key</h2>
+            <p>Please enter your DeepL API Key to enable translations. Your key is stored locally in your browser.</p>
+            <input type="password" id="api-key-input" placeholder="e.g. 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p:fx">
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" id="close-modal-btn">Cancel</button>
+                <button class="modal-btn btn-save" id="save-key-btn">Save Key</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom Dropdown Logic
+        function setupCustomSelect(selectElementId) {
+            const selectDiv = document.getElementById(selectElementId);
+            const selected = selectDiv.querySelector('.select-selected');
+            const itemsList = selectDiv.querySelector('.select-items');
+            const items = itemsList.querySelectorAll('div');
+
+            selected.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeAllSelect(this);
+                this.classList.toggle('select-arrow-active');
+                itemsList.classList.toggle('select-hide');
+            });
+
+            items.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    selected.innerHTML = this.innerHTML;
+                    selectDiv.dataset.value = this.dataset.value;
+                    selected.click(); // Close dropdown
+                });
+            });
+        }
+
+        function closeAllSelect(elmnt) {
+            const selectedItems = document.getElementsByClassName("select-selected");
+            const itemsLists = document.getElementsByClassName("select-items");
+            for (let i = 0; i < selectedItems.length; i++) {
+                if (elmnt !== selectedItems[i]) {
+                    selectedItems[i].classList.remove("select-arrow-active");
+                    itemsLists[i].classList.add("select-hide");
+                }
+            }
+        }
+
+        document.addEventListener("click", closeAllSelect);
+
+        setupCustomSelect('source-select');
+        setupCustomSelect('target-select');
+
+        // Swap Languages Logic
+        document.getElementById('swap-lang').addEventListener('click', () => {
+            const sourceSelect = document.getElementById('source-select');
+            const targetSelect = document.getElementById('target-select');
+            
+            const sourceVal = sourceSelect.dataset.value;
+            const targetVal = targetSelect.dataset.value;
+
+            // Simple map since DeepL has EN-US/EN-GB vs EN, we fallback
+            let newSourceVal = targetVal;
+            if (newSourceVal === 'EN-US' || newSourceVal === 'EN-GB') newSourceVal = 'EN';
+            if (newSourceVal === 'PT-BR') newSourceVal = 'PT';
+
+            let newTargetVal = sourceVal;
+            if (newTargetVal === 'EN') newTargetVal = 'EN-US'; // default EN target
+            if (newTargetVal === 'auto') {
+                // Cannot target 'auto', don't swap if source is auto
+                return;
+            }
+            if (newTargetVal === 'PT') newTargetVal = 'PT-BR';
+
+            // Find matching UI text
+            const sourceItems = sourceSelect.querySelectorAll('.select-items div');
+            let sourceText = '';
+            sourceItems.forEach(item => { if(item.dataset.value === newSourceVal) sourceText = item.innerHTML; });
+
+            const targetItems = targetSelect.querySelectorAll('.select-items div');
+            let targetText = '';
+            targetItems.forEach(item => { if(item.dataset.value === newTargetVal) targetText = item.innerHTML; });
+
+            if (sourceText && targetText) {
+                sourceSelect.dataset.value = newSourceVal;
+                sourceSelect.querySelector('.select-selected').innerHTML = sourceText;
+
+                targetSelect.dataset.value = newTargetVal;
+                targetSelect.querySelector('.select-selected').innerHTML = targetText;
+            }
+
+            // Swap text
+            const sourceTextarea = document.getElementById('source-text');
+            const targetTextarea = document.getElementById('target-text');
+            const tempText = sourceTextarea.value;
+            sourceTextarea.value = targetTextarea.value;
+            targetTextarea.value = tempText;
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('api-modal');
+        const settingsBtn = document.getElementById('settings-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const saveKeyBtn = document.getElementById('save-key-btn');
+        const apiKeyInput = document.getElementById('api-key-input');
+
+        // Load saved key
+        const savedKey = localStorage.getItem('deepl_api_key');
+        if (savedKey) apiKeyInput.value = savedKey;
+
+        settingsBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeModalBtn.addEventListener('click', () => modal.classList.remove('active'));
+        
+        saveKeyBtn.addEventListener('click', () => {
+            localStorage.setItem('deepl_api_key', apiKeyInput.value.trim());
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+
+        // DeepL API Translation Logic
+        document.getElementById('translate-btn').addEventListener('click', async function() {
+            const btn = this;
+            const btnText = btn.querySelector('.btn-text');
+            const sourceText = document.getElementById('source-text').value.trim();
+            const targetTextarea = document.getElementById('target-text');
+            const errorMsg = document.getElementById('error-message');
+            
+            const sourceLang = document.getElementById('source-select').dataset.value;
+            const targetLang = document.getElementById('target-select').dataset.value;
+            const apiKey = localStorage.getItem('deepl_api_key');
+
+            errorMsg.style.opacity = '0';
+
+            if (!sourceText) return;
+
+            if (!apiKey) {
+                errorMsg.innerText = "Please set your DeepL API Key in settings.";
+                errorMsg.style.opacity = '1';
+                modal.classList.add('active');
+                return;
+            }
+
+            // Start loading state
+            btn.classList.add('loading');
+            btnText.innerText = 'Translating...';
+
+            try {
+                // DeepL API requires an auth header or auth_key parameter
+                const isFreeAPI = apiKey.endsWith(':fx');
+                const apiUrl = isFreeAPI 
+                    ? 'https://api-free.deepl.com/v2/translate'
+                    : 'https://api.deepl.com/v2/translate';
+
+                const requestBody = {
+                    text: [sourceText],
+                    target_lang: targetLang
+                };
+
+                if (sourceLang !== 'auto') {
+                    requestBody.source_lang = sourceLang;
+                }
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `DeepL-Auth-Key ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || `API Error: ${response.status}`);
+                }
+
+                if (data.translations && data.translations.length > 0) {
+                    targetTextarea.value = data.translations[0].text;
+                }
+
+            } catch (err) {
+                errorMsg.innerText = err.message || "Failed to translate.";
+                errorMsg.style.opacity = '1';
+            } finally {
+                // End loading state
+                btn.classList.remove('loading');
+                btnText.innerText = 'Translate';
+            }
+        });
+    </script>
+</body>
+</html>
