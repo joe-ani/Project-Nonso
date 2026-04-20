@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Translate - DeepL</title>
+    <title>Global Translate - MyMemory</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -534,12 +534,7 @@
     <div class="container">
         <header>
             <h1>Global Translate</h1>
-            <p>Powered by DeepL. Seamless communication without borders.</p>
-            <button class="settings-btn" id="settings-btn" aria-label="Settings">
-                <svg viewBox="0 0 24 24">
-                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"></path>
-                </svg>
-            </button>
+            <p>Powered by MyMemory API. Seamless communication without borders.</p>
         </header>
 
         <div class="translator-app">
@@ -616,18 +611,7 @@
         </div>
     </div>
 
-    <!-- API Key Modal -->
-    <div class="modal-overlay" id="api-modal">
-        <div class="modal">
-            <h2>DeepL API Key</h2>
-            <p>Please enter your DeepL API Key to enable translations. Your key is stored locally in your browser.</p>
-            <input type="password" id="api-key-input" placeholder="e.g. 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p:fx">
-            <div class="modal-actions">
-                <button class="modal-btn btn-cancel" id="close-modal-btn">Cancel</button>
-                <button class="modal-btn btn-save" id="save-key-btn">Save Key</button>
-            </div>
-        </div>
-    </div>
+
 
     <script>
         // Custom Dropdown Logic
@@ -677,18 +661,13 @@
             const sourceVal = sourceSelect.dataset.value;
             const targetVal = targetSelect.dataset.value;
 
-            // Simple map since DeepL has EN-US/EN-GB vs EN, we fallback
             let newSourceVal = targetVal;
-            if (newSourceVal === 'EN-US' || newSourceVal === 'EN-GB') newSourceVal = 'EN';
-            if (newSourceVal === 'PT-BR') newSourceVal = 'PT';
-
             let newTargetVal = sourceVal;
-            if (newTargetVal === 'EN') newTargetVal = 'EN-US'; // default EN target
+
             if (newTargetVal === 'auto') {
                 // Cannot target 'auto', don't swap if source is auto
                 return;
             }
-            if (newTargetVal === 'PT') newTargetVal = 'PT-BR';
 
             // Find matching UI text
             const sourceItems = sourceSelect.querySelectorAll('.select-items div');
@@ -715,30 +694,9 @@
             targetTextarea.value = tempText;
         });
 
-        // Modal Logic
-        const modal = document.getElementById('api-modal');
-        const settingsBtn = document.getElementById('settings-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const saveKeyBtn = document.getElementById('save-key-btn');
-        const apiKeyInput = document.getElementById('api-key-input');
 
-        // Load saved key
-        const savedKey = localStorage.getItem('deepl_api_key');
-        if (savedKey) apiKeyInput.value = savedKey;
 
-        settingsBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeModalBtn.addEventListener('click', () => modal.classList.remove('active'));
-        
-        saveKeyBtn.addEventListener('click', () => {
-            localStorage.setItem('deepl_api_key', apiKeyInput.value.trim());
-            modal.classList.remove('active');
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('active');
-        });
-
-        // DeepL API Translation Logic
+        // MyMemory API Translation Logic
         document.getElementById('translate-btn').addEventListener('click', async function() {
             const btn = this;
             const btnText = btn.querySelector('.btn-text');
@@ -748,56 +706,33 @@
             
             const sourceLang = document.getElementById('source-select').dataset.value;
             const targetLang = document.getElementById('target-select').dataset.value;
-            const apiKey = localStorage.getItem('deepl_api_key');
 
             errorMsg.style.opacity = '0';
 
             if (!sourceText) return;
-
-            if (!apiKey) {
-                errorMsg.innerText = "Please set your DeepL API Key in settings.";
-                errorMsg.style.opacity = '1';
-                modal.classList.add('active');
-                return;
-            }
 
             // Start loading state
             btn.classList.add('loading');
             btnText.innerText = 'Translating...';
 
             try {
-                // DeepL API requires an auth header or auth_key parameter
-                const isFreeAPI = apiKey.endsWith(':fx');
-                const apiUrl = isFreeAPI 
-                    ? 'https://api-free.deepl.com/v2/translate'
-                    : 'https://api.deepl.com/v2/translate';
+                // MyMemory uses standard language codes
+                // If auto, MyMemory handles "Autodetect" if we use "Autodetect|targetLang"
+                const langPair = sourceLang === 'auto' ? `Autodetect|${targetLang}` : `${sourceLang}|${targetLang}`;
+                
+                const url = new URL('https://api.mymemory.translated.net/get');
+                url.searchParams.append('q', sourceText);
+                url.searchParams.append('langpair', langPair);
 
-                const requestBody = {
-                    text: [sourceText],
-                    target_lang: targetLang
-                };
-
-                if (sourceLang !== 'auto') {
-                    requestBody.source_lang = sourceLang;
-                }
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `DeepL-Auth-Key ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
+                const response = await fetch(url);
                 const data = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(data.message || `API Error: ${response.status}`);
+                if (data.responseStatus !== 200) {
+                    throw new Error(data.responseDetails || `API Error: ${data.responseStatus}`);
                 }
 
-                if (data.translations && data.translations.length > 0) {
-                    targetTextarea.value = data.translations[0].text;
+                if (data.responseData && data.responseData.translatedText) {
+                    targetTextarea.value = data.responseData.translatedText;
                 }
 
             } catch (err) {
