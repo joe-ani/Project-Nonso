@@ -109,7 +109,7 @@
         }
 
         p {
-            color: var(--text-muted);
+            color: var(--text-muted);  
             font-size: 1.1rem;
         }
 
@@ -573,21 +573,77 @@
         }
 
         @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            p {
+                font-size: 0.95rem;
+            }
+
+            .container {
+                width: 95%;
+                padding: 1rem 0;
+            }
+
+            .translator-app {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+
             .text-areas {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 2.5rem; /* Extra gap so character count doesn't overlap next box */
             }
+
+            textarea {
+                height: 200px;
+                padding: 1.25rem;
+            }
+
             .controls {
                 flex-direction: column;
+                gap: 0.5rem;
             }
+
             .swap-btn {
                 transform: rotate(90deg);
+                margin: 0.5rem 0;
+                width: 48px;
+                height: 48px;
             }
+
             .swap-btn:hover {
                 transform: rotate(270deg) scale(1.1);
             }
+
             .swap-btn:active {
                 transform: rotate(270deg) scale(0.95);
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .translate-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .error-message {
+                margin-right: 0;
+                text-align: center;
+            }
+
+            .input-utilities {
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .char-count {
+                bottom: -1.5rem;
             }
         }
     </style>
