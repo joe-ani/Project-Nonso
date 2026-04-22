@@ -14,9 +14,9 @@
         }
 
         body {
-            background-color: #ff90e8;
-            background-image: radial-gradient(#000 2px, transparent 2px);
-            background-size: 30px 30px;
+            background: linear-gradient(-45deg, #ff90e8, #ffc900, #00e5ff, #a200ff);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             color: #000;
             min-height: 100vh;
             display: flex;
@@ -25,6 +25,12 @@
             justify-content: center;
             padding: 2rem;
             overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
