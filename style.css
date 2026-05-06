@@ -1,0 +1,347 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: linear-gradient(-45deg, #ff90e8, #ffc900, #00e5ff, #a200ff);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    color: #000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow-x: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    background: #fff;
+    border: 4px solid #000;
+    box-shadow: 16px 16px 0px #000;
+    padding: 3rem;
+    border-radius: 8px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 4px solid #000;
+    padding-bottom: 2rem;
+    position: relative;
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-shadow: 4px 4px 0px #00e5ff;
+    margin-bottom: 1rem;
+    letter-spacing: -2px;
+}
+
+p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.student-badge {
+    display: inline-block;
+    background: #ffc900;
+    border: 3px solid #000;
+    padding: 0.8rem 1.5rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 6px 6px 0px #000;
+    transform: rotate(-2deg);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.select-selected {
+    background: #fff;
+    border: 4px solid #000;
+    padding: 16px 20px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 6px 6px 0px #000;
+    transition: transform 0.1s;
+}
+
+.select-selected:active {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0px #000;
+}
+
+.select-selected:after {
+    content: "▼";
+    font-size: 0.9rem;
+}
+
+.select-selected.select-arrow-active:after {
+    content: "▲";
+}
+
+.select-items {
+    position: absolute;
+    background-color: #fff;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    margin-top: 8px;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0px #000;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.select-hide {
+    display: none;
+}
+
+.select-items div {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #000;
+}
+
+.select-items div:last-child {
+    border-bottom: none;
+}
+
+.select-items div:hover {
+    background-color: #00e5ff;
+}
+
+.swap-btn {
+    background: #ffc900;
+    border: 4px solid #000;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 6px 6px 0px #000;
+    flex-shrink: 0;
+}
+
+.swap-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0px #000;
+}
+
+.swap-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: #000;
+}
+
+.text-areas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    position: relative;
+}
+
+.input-group {
+    position: relative;
+}
+
+textarea {
+    width: 100%;
+    height: 300px;
+    background: #fff;
+    border: 4px solid #000;
+    padding: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    resize: none;
+    outline: none;
+    box-shadow: 8px 8px 0px #000;
+}
+
+textarea:focus {
+    background: #f4f4f4;
+}
+
+.input-utilities {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.util-btn {
+    background: #fff;
+    border: 3px solid #000;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px #000;
+}
+
+.util-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000;
+}
+
+.util-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: #000;
+}
+
+.char-count {
+    position: absolute;
+    bottom: -2rem;
+    left: 0;
+    font-weight: 800;
+    background: #000;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.actions {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.error-message {
+    position: absolute;
+    left: 0;
+    color: #ff0000;
+    font-weight: 900;
+    font-size: 1.1rem;
+    opacity: 0;
+}
+
+.translate-btn {
+    background: #00e5ff;
+    color: #000;
+    border: 4px solid #000;
+    padding: 16px 48px;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 8px 8px 0px #000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.translate-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 4px 4px 0px #000;
+}
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 4px solid #000;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: none;
+}
+
+.translate-btn.loading .loader {
+    display: block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(50px);
+    background: #000;
+    color: #fff;
+    padding: 16px 32px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    z-index: 1000;
+    border: 4px solid #ff90e8;
+    box-shadow: 8px 8px 0px #00e5ff;
+}
+
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    background: #fff;
+    border-left: 3px solid #000;
+}
+::-webkit-scrollbar-thumb {
+    background: #000;
+}
+
+@media (max-width: 768px) {
+    body { padding: 1rem; }
+    h1 { font-size: 2rem; }
+    p { font-size: 1rem; }
+    .container { padding: 1rem; border-width: 3px; box-shadow: 8px 8px 0px #000; }
+    .student-badge { font-size: 0.9rem; padding: 0.5rem 1rem; }
+    .text-areas { grid-template-columns: 1fr; gap: 2.5rem; }
+    .controls { flex-direction: column; gap: 0.5rem; }
+    .swap-btn { transform: rotate(90deg); margin: 0.5rem 0; width: 48px; height: 48px; border-width: 3px; box-shadow: 4px 4px 0px #000; }
+    .swap-btn svg { width: 24px; height: 24px; }
+    .swap-btn:active { transform: rotate(90deg) translate(2px, -2px); box-shadow: 2px 2px 0px #000; }
+    textarea { height: 200px; padding: 1rem; box-shadow: 4px 4px 0px #000; border-width: 3px; }
+    .select-selected { padding: 12px 16px; font-size: 1.1rem; box-shadow: 4px 4px 0px #000; border-width: 3px; }
+    .translate-btn { width: 100%; justify-content: center; padding: 14px; font-size: 1.2rem; box-shadow: 4px 4px 0px #000; border-width: 3px; }
+    .util-btn { width: 44px; height: 44px; box-shadow: 2px 2px 0px #000; border-width: 2px; }
+    .char-count { font-size: 0.9rem; bottom: -1.5rem; }
+}
